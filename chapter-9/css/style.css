@@ -16,4 +16,13 @@
 
 .map {
     border: medium solid #999;
+    /* width: 97vw;
+    height: 72vh; */
+
+}
+
+.chart {
+    border: medium solid #999;
+    /* width: 97vw;
+    height: 20vh; */
 }
