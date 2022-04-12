@@ -155,8 +155,8 @@
                     return "#ccc";
                 }
             })
-            .on("click", function(event, d){
-                
+            .on("click", function (event, d) {
+                drawCircle(d.properties["incarcerated_20"]);
             });
     }
 
@@ -171,19 +171,43 @@
             .attr("width", chartWidth)
             .attr("height", chartHeight)
             .attr("class", "chart");
-
-        var circle = d3.select(".incarceratedCircle") //no circle yet
-            .data(csvData)
-            .enter()
-            .append("incarceratedCircle")
-            .attr("class", function(d){
-                return "incarceratedCircle " + d.GEOID;
-            }) 
-            .attr("r", function(d, i){ //circle radius
-                console.log("d:", d, "i:", i); //let's take a look at d and i
-                return d;
-            })
-
+            return chart
     }
+
+    function drawCircle (csvData, colorScale) {
+        var circle = chart.append("incarceratedCircle")
+        .datum(d.properties["incarcerated_20"])
+        .attr("id", function (d) {
+            return "incarceratedCircle " +d.GEOID;
+        })
+        .attr("r", function(d){
+            //calculate the radius based on population value as circle area
+            var area = d.properties["incarcerated_20"] * 0.01;
+            return Math.sqrt(area/Math.PI);
+        })
+        .attr("cx", function(d, i){
+            //use the index to place each circle horizontally
+            return 90 + (i * 180);
+        })
+        .attr("cy", function(d){
+            //subtract value from 450 to "grow" circles up from the bottom instead of down from the top of the SVG
+            return 450 - (d.properties["incarcerated_20"] * 0.0005);
+        });
+    }
+
+        
+        // var circle = d3.select(".incarceratedCircle") //no circle yet
+        // .datum(csvData)
+        // .enter()
+        // .append("incarceratedCircle")
+        // .attr("id", function (d) {
+        //     return "incarceratedCircle " + d.GEOID;
+        // })
+        // .attr("r", function (d, i) { //circle radius
+        //     console.log("d:", d, "i:", i); //let's take a look at d and i
+        //     return d;
+        // })
+    // }
+
 
 })();
