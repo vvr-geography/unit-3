@@ -25,7 +25,7 @@
         //create Albers equal area conic projection centered on US
         var projection = d3.geoAlbers()
             .parallels([29.5, 45.5])
-            .scale(1500)
+            .scale(1400)
             .translate([480, 250])
             .rotate([96, 0])
             .center([-0.6, 38.7])
@@ -154,6 +154,9 @@
                 } else {
                     return "#ccc";
                 }
+            })
+            .on("click", function(event, d){
+                
             });
     }
 
@@ -179,9 +182,6 @@
             .attr("r", function(d, i){ //circle radius
                 console.log("d:", d, "i:", i); //let's take a look at d and i
                 return d;
-            })
-            .on("click", function(event, d){
-                
             })
 
     }
