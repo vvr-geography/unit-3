@@ -156,8 +156,11 @@
                 }
             })
             .on("click", function (event, d) {
-                drawCircle(d.properties["incarcerated_20"]);
-            });
+                redrawCircle(d.properties, ".incarceratedCircle");
+            })
+            .on("mouseover", function (event, d) {
+                redrawCircle(d.properties, ".incarceratedHoverCircle");
+            })
     }
 
     function setChart(csvData, colorScale) {
@@ -171,28 +174,62 @@
             .attr("width", chartWidth)
             .attr("height", chartHeight)
             .attr("class", "chart");
-            return chart
+
+        drawCircle();
     }
 
-    function drawCircle (csvData, colorScale) {
-        var circle = chart.append("incarceratedCircle")
-        .datum(d.properties["incarcerated_20"])
+    function redrawCircle (data, type) {
+        var circle = d3.select(type)
+        .datum(data)
         .attr("id", function (d) {
             return "incarceratedCircle " +d.GEOID;
         })
         .attr("r", function(d){
             //calculate the radius based on population value as circle area
-            var area = d.properties["incarcerated_20"] * 0.01;
+            var area = d["incarcerated_20"] * 0.1;
+            return Math.sqrt(area/Math.PI);
+        })
+    }
+
+    function drawCircle () {
+        var circle = d3.select(".chart")
+        .append("circle")
+        .datum(15000)
+        .attr("class", "incarceratedCircle")
+        .attr("r", function(d){
+            //calculate the radius based on population value as circle area
+            console.log(d);
+            var area = d * 0.1;
             return Math.sqrt(area/Math.PI);
         })
         .attr("cx", function(d, i){
             //use the index to place each circle horizontally
-            return 90 + (i * 180);
+            return 90;
         })
         .attr("cy", function(d){
             //subtract value from 450 to "grow" circles up from the bottom instead of down from the top of the SVG
-            return 450 - (d.properties["incarcerated_20"] * 0.0005);
+            return 80;
         });
+
+        var circle = d3.select(".chart")
+        .append("circle")
+        .datum(15000)
+        .attr("class", "incarceratedHoverCircle")
+        .attr("r", function(d){
+            //calculate the radius based on population value as circle area
+            console.log(d);
+            var area = d * 0.1;
+            return Math.sqrt(area/Math.PI);
+        })
+        .attr("cx", function(d, i){
+            //use the index to place each circle horizontally
+            return 500;
+        })
+        .attr("cy", function(d){
+            //subtract value from 450 to "grow" circles up from the bottom instead of down from the top of the SVG
+            return 80;
+        });
+
     }
 
         
