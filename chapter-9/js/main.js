@@ -1,6 +1,7 @@
 (function () {
     //variables for data join
     var attrArray = ["total_population_20", "incarcerated_20", "total_population_10", "incarcerated_10", "total_population_00", "incarcerated_20", "historical_90", "slow_90", "noaction_90", "rapid_90", "historical_100", "slow_100", "noaction_100", "rapid_100", "historical_105", "slow_105", "noaction_105", "rapid_105", "historical_127", "slow_127", "noaction_127", "rapid_127"];
+    var heatIndexArray = ["historical_90", "slow_90", "noaction_90", "rapid_90"];
     var expressed1 = attrArray[8]
     //var expressed = attrArray[1]; //initial attribute
     //var divider = attrArray[0];
@@ -156,7 +157,7 @@
                 }
             })
             .on("click", function (event, d) {
-                redrawCircle(d.properties, ".incarceratedCircle");
+                redrawCircle(d.properties, ".incarceratedCircle")
             })
             .on("mouseover", function (event, d) {
                 redrawCircle(d.properties, ".incarceratedHoverCircle");
@@ -175,76 +176,97 @@
             .attr("height", chartHeight)
             .attr("class", "chart");
 
+        //create axis
+        var y = d3.scaleLinear()
+            .range([400, 50])
+            .domain([200, 0]);
+
+        var xAxis = d3.axisBottom(y);
+
+        //create axis g element and add axis
+        var axis1 = chart.append("g")
+            .attr("class", "axis1")
+            .attr("transform", "translate(75, 100)")
+            .call(xAxis);
+
+        var axis2 = chart.append("g")
+            .attr("class", "axis2")
+            .attr("transform", "translate(575, 100)")
+            .call(xAxis);
+
         drawCircle();
+        drawHeatIndex()
     }
 
-    function redrawCircle (data, type) {
+    function drawCircle() {
+        var circle = d3.select(".chart")
+            .append("circle")
+            .datum(15000)
+            .attr("class", "incarceratedCircle")
+            .attr("r", function (d) {
+                //calculate the radius based on population value as circle area
+                console.log(d);
+                var area = d * 0.25;
+                return Math.sqrt(area / Math.PI);
+            })
+            .attr("cx", function (d, i) {
+                return 70;
+            })
+            .attr("cy", function (d) {
+                return 80;
+            });
+
+        var circle = d3.select(".chart")
+            .append("circle")
+            .datum(15000)
+            .attr("class", "incarceratedHoverCircle")
+            .attr("r", function (d) {
+                //calculate the radius based on population value as circle area
+                console.log(d);
+                var area = d * 0.25;
+                return Math.sqrt(area / Math.PI);
+            })
+            .attr("cx", function (d, i) {
+                return 550;
+            })
+            .attr("cy", function (d) {
+                return 80;
+            });
+
+    }
+
+    function redrawCircle(data, type) {
         var circle = d3.select(type)
-        .datum(data)
-        .attr("id", function (d) {
-            return "incarceratedCircle " +d.GEOID;
-        })
-        .attr("r", function(d){
-            //calculate the radius based on population value as circle area
-            var area = d["incarcerated_20"] * 0.1;
-            return Math.sqrt(area/Math.PI);
-        })
+            .datum(data)
+            .attr("id", function (d) {
+                return "incarceratedCircle " + d.GEOID;
+            })
+            .attr("r", function (d) {
+                //calculate the radius based on population value as circle area
+                var area = d["incarcerated_20"] * 0.1;
+                return Math.sqrt(area / Math.PI);
+            })
     }
 
-    function drawCircle () {
-        var circle = d3.select(".chart")
-        .append("circle")
-        .datum(15000)
-        .attr("class", "incarceratedCircle")
-        .attr("r", function(d){
-            //calculate the radius based on population value as circle area
-            console.log(d);
-            var area = d * 0.1;
-            return Math.sqrt(area/Math.PI);
-        })
-        .attr("cx", function(d, i){
-            //use the index to place each circle horizontally
-            return 90;
-        })
-        .attr("cy", function(d){
-            //subtract value from 450 to "grow" circles up from the bottom instead of down from the top of the SVG
-            return 80;
-        });
-
-        var circle = d3.select(".chart")
-        .append("circle")
-        .datum(15000)
-        .attr("class", "incarceratedHoverCircle")
-        .attr("r", function(d){
-            //calculate the radius based on population value as circle area
-            console.log(d);
-            var area = d * 0.1;
-            return Math.sqrt(area/Math.PI);
-        })
-        .attr("cx", function(d, i){
-            //use the index to place each circle horizontally
-            return 500;
-        })
-        .attr("cy", function(d){
-            //subtract value from 450 to "grow" circles up from the bottom instead of down from the top of the SVG
-            return 80;
-        });
-
+    function drawHeatIndex(data, type, scale, colorScale) {
+        var circle = d3.select(type)
+            .append("circle")
+            .data(heatIndexArray)
+            .enter()
+            .attr("class", "heatIndex")
+            .attr("id", function (d) {
+                return d
+            })
+            .attr("r", function (d) {
+                var area = 100
+                return Math.sqrt(area / Math.PI)
+            })
+            .attr("cx", function (d, i) {
+                return scale(data[d]);
+            })
+            .attr("cy", function (d) {
+                return 80;
+            })
     }
-
-        
-        // var circle = d3.select(".incarceratedCircle") //no circle yet
-        // .datum(csvData)
-        // .enter()
-        // .append("incarceratedCircle")
-        // .attr("id", function (d) {
-        //     return "incarceratedCircle " + d.GEOID;
-        // })
-        // .attr("r", function (d, i) { //circle radius
-        //     console.log("d:", d, "i:", i); //let's take a look at d and i
-        //     return d;
-        // })
-    // }
-
 
 })();
