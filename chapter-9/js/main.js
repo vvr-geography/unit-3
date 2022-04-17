@@ -1,10 +1,14 @@
 (function () {
     //variables for data join
     var attrArray = ["total_population_20", "incarcerated_20", "total_population_10", "incarcerated_10", "total_population_00", "incarcerated_20", "historical_90", "slow_90", "noaction_90", "rapid_90", "historical_100", "slow_100", "noaction_100", "rapid_100", "historical_105", "slow_105", "noaction_105", "rapid_105", "historical_127", "slow_127", "noaction_127", "rapid_127"];
-    var heatIndexArray = ["historical_90", "slow_90", "noaction_90", "rapid_90"];
-    var expressed1 = attrArray[8]
-    //var expressed = attrArray[1]; //initial attribute
-    //var divider = attrArray[0];
+    var year = [90, 100, 105, 127];
+    var heatIndexArray = ["historical_" + year, "slow_" + year, "noaction_" + year, "rapid_" + year];
+    var expressed1 = attrArray[6]
+
+    //create global scale
+    var scaleY = d3.scaleLinear()
+        .range([400, 50])
+        .domain([200, 0]);
 
     //begin script when window loads
     window.onload = setMap();
@@ -26,7 +30,7 @@
         //create Albers equal area conic projection centered on US
         var projection = d3.geoAlbers()
             .parallels([29.5, 45.5])
-            .scale(1400)
+            .scale(1250)
             .translate([480, 250])
             .rotate([96, 0])
             .center([-0.6, 38.7])
@@ -62,6 +66,10 @@
 
             //add coordinated visual
             setChart(csvData, colorScale);
+
+            //create dropdown
+            createDropdown(csvData);
+
         }
     }; //end setMap()
 
@@ -158,9 +166,11 @@
             })
             .on("click", function (event, d) {
                 redrawCircle(d.properties, ".incarceratedCircle")
+                drawHeatIndex(this.Value, d.properties, ".linePlot1", 75, "heatIndexClick", colorScale)
             })
             .on("mouseover", function (event, d) {
                 redrawCircle(d.properties, ".incarceratedHoverCircle");
+                drawHeatIndex(this.Value, d.properties, ".linePlot2", 575, "heatIndexHover", colorScale)
             })
     }
 
@@ -176,26 +186,44 @@
             .attr("height", chartHeight)
             .attr("class", "chart");
 
-        //create axis
-        var y = d3.scaleLinear()
-            .range([400, 50])
-            .domain([200, 0]);
+        var linePlot1 = d3.select(".chart")
+            .append("svg")
+            .attr("height", 200)
+            .attr("width", 500)
+            .attr("transform", "translate(70, 105)")
+            .attr("class", "linePlot1");
 
-        var xAxis = d3.axisBottom(y);
+        var linePlot2 = d3.select(".chart")
+            .append("svg")
+            .attr("height", 200)
+            .attr("width", 500)
+            .attr("transform", "translate(570, 105)")
+            .attr("class", "linePlot2");
+
+        //create axis
+
+        var xAxis = d3.axisBottom(scaleY);
 
         //create axis g element and add axis
-        var axis1 = chart.append("g")
+        var axis1 = linePlot1.append("g")
             .attr("class", "axis1")
             .attr("transform", "translate(75, 100)")
             .call(xAxis);
 
-        var axis2 = chart.append("g")
+        var axis2 = linePlot2.append("g")
             .attr("class", "axis2")
             .attr("transform", "translate(575, 100)")
             .call(xAxis);
 
+        var chartTitle = chart.append("text")
+            .attr("x", 115)
+            .attr("y", 20)
+            .attr("class", "chartTitle")
+            .text("Number of Incarcerated People " + "Projected Number of Days Above a Heat Index of " + year + " Degrees, By County")
+
         drawCircle();
-        drawHeatIndex()
+        //drawHeatIndex()
+
     }
 
     function drawCircle() {
@@ -206,7 +234,7 @@
             .attr("r", function (d) {
                 //calculate the radius based on population value as circle area
                 console.log(d);
-                var area = d * 0.25;
+                var area = d * 0.4;
                 return Math.sqrt(area / Math.PI);
             })
             .attr("cx", function (d, i) {
@@ -223,7 +251,7 @@
             .attr("r", function (d) {
                 //calculate the radius based on population value as circle area
                 console.log(d);
-                var area = d * 0.25;
+                var area = d * 0.4;
                 return Math.sqrt(area / Math.PI);
             })
             .attr("cx", function (d, i) {
@@ -232,7 +260,6 @@
             .attr("cy", function (d) {
                 return 80;
             });
-
     }
 
     function redrawCircle(data, type) {
@@ -242,31 +269,136 @@
                 return "incarceratedCircle " + d.GEOID;
             })
             .attr("r", function (d) {
-                //calculate the radius based on population value as circle area
-                var area = d["incarcerated_20"] * 0.1;
+                var area = d["incarcerated_20"] * 0.4;
                 return Math.sqrt(area / Math.PI);
             })
+
+        var numbers = d3.select(type).select(".numbers")
+            .datum(data)
+            .append("text")
+            .attr("class", function (d) {
+                return "numbers " + d.GEOID
+            })
+            .attr("text-anchor", "middle")
+            .attr("x", function (d) {
+                if (type == "incarceratedCircle") {
+                    return 70
+                }
+                else {
+                    return 550
+                }
+            })
+
+            .attr("y", function (d) {
+                return 100;
+            })
+            .text(function (d) {
+                return d["incarcerated_20"];
+            });
+
     }
 
-    function drawHeatIndex(data, type, scale, colorScale) {
-        var circle = d3.select(type)
-            .append("circle")
-            .data(heatIndexArray)
+    function createDropdown(csvData) {
+        var dropdown = d3.select("body")
+            .append("select")
+            .attr("class", "dropdown")
+            .on("change", function () {
+                changeAttribute(this.value, csvData)
+                changeHeatIndex(this.value, csvData, ".linePlot1", "heatIndexClick")
+                changeHeatIndex(this.value, csvData, ".linePlot2", "heatIndexHover")
+            });
+
+        //add initial option
+        var titleOption = dropdown.append("option")
+            .attr("class", "titleOption")
+            .attr("disabled", "true")
+            .text("Select Attribute");
+
+        //add attribute name options
+        var attrOptions = dropdown
+            .selectAll("attrOptions")
+            .data(year)
             .enter()
-            .attr("class", "heatIndex")
+            .append("option")
+            .attr("value", function (d) {
+                return d
+            })
+            .text(function (d) {
+                return d + " degrees"
+            });
+    }
+
+    //dropdown change event handler
+    function changeAttribute(attribute, csvData) {
+        //change the expressed attribute
+        expressed1 = "historical_" + attribute;
+
+        //recreate the color scale
+        var colorScale = makeColorScale(csvData);
+
+        //recolor enumeration units
+        var counties = d3.selectAll(".counties")
+            .style("fill", function (d) {
+                var value = d.properties[expressed1];
+                if (value) {
+                    return colorScale(d.properties[expressed1]);
+                } else {
+                    return "#ccc";
+                }
+            });
+    }
+
+    function drawHeatIndex(attribute, data, type, transform, label, colorScale) {
+        d3.select(type).selectAll("circle").remove();
+        expressed1 = "historical_" + attribute
+        year = 90
+        var circle = d3.select(type)
+            .selectAll("." + label)
+            .data(["historical_" + year, "slow_" + year, "noaction_" + year, "rapid_" + year])
+            .enter()
+            .append("circle")
+            .attr("class", label)
             .attr("id", function (d) {
                 return d
             })
-            .attr("r", function (d) {
-                var area = 100
-                return Math.sqrt(area / Math.PI)
-            })
+            .attr("r", 10)
             .attr("cx", function (d, i) {
-                return scale(data[d]);
+                return scaleY(data[d]);
             })
             .attr("cy", function (d) {
                 return 80;
             })
+            .attr("transform", "translate(" + transform + ")")
+            .style("fill", function (d) {
+                var value = data[d];
+                if (value) {
+                    return colorScale(data[d]);
+                } else {
+                    return "#ccc";
+                }
+            });
     }
+
+
+    function changeHeatIndex(attribute, csvData, type, label) {
+        //change expressed attribute
+        expressed1 = "historical_" + attribute;
+        //recreate the color scale
+        var colorScale = makeColorScale(csvData);
+
+        //recolor enumeration units
+        var circle = d3.selectAll(type)
+            .selectall("." + label)
+            .style("fill", function (d) {
+                var value = d.properties[expressed1];
+                if (value) {
+                    return colorScale(d.properties[expressed1]);
+                } else {
+                    return "#ccc";
+                }
+            })
+    }
+
+
 
 })();
