@@ -1,3 +1,7 @@
+body {
+    background-color: black;
+}
+
 .counties {
     fill: #ffffff;
     stroke: black;
@@ -11,32 +15,33 @@
 }
 
 .gratBackground {
-    fill: #D5E3FF;
+    fill: black;
 }
 
-.map {
-    border: medium solid #999;
-    /* width: 97vw;
+/* .map { */
+/* border: medium solid #999; */
+/* width: 97vw;
     height: 72vh; */
 
-}
+/* } */
 
-.chart {
-    border: medium solid #999;
-    /* width: 97vw;
+/* .chart { */
+/* border: medium solid #999; */
+/* width: 97vw;
     height: 20vh; */
-}
+/* } */
 
 .incarceratedCircle {
-    fill: black;
+    fill: white;
 }
 
 .incarceratedHoverCircle {
-    fill: black;
+    fill: white;
 }
 
 circle {
     fill: none;
+    stroke: black;
 }
 
 .axis path,
@@ -50,6 +55,7 @@ circle {
 .axis text {
     font-family: sans-serif;
     font-size: 0.9em;
+    color: white;
 }
 
 .heatIndex {
@@ -57,18 +63,18 @@ circle {
 }
 
 .linePlot1 {
-    stroke: black;
+    fill: white;
     stroke-width: 1px;
     height: 500px;
-    fill: black;
+    color: white;
 }
 
 .linePlot2 {
-    stroke: black;
-    stroke-width: 1px;
+    fill: white;
     height: 500px;
-    fill: black;
     overflow: visible;
+    color: white;
+
 }
 
 .numbers {
@@ -77,6 +83,7 @@ circle {
 }
 
 .chartTitle {
+    fill: white;
     font-family: sans-serif;
     font-size: 1 em;
     font-weight: bold;
@@ -140,6 +147,10 @@ option {
     font-weight: bold;
 }
 
+.countylabelincarceratedHoverCircle {
+    font-weight: bold;
+}
+
 .maphtml {
     width: 75vw;
     height: 100vh;
@@ -147,26 +158,54 @@ option {
 }
 
 .labellegend {
-    padding: 10 0 10 0;
+    padding-right: 10px;
+    padding-bottom: 10px;
     position: absolute;
-    position: right;  
     right: 0;
-    width: 23vw;
+    width: 25vw;
     height: 100vh;
     float: right;
 }
 
-.labelclick {
-    position: relative;
-    float:inline-start
+.labellegend p {
+    color: white;
+
 }
 
+.labellegend ul {
+    margin: 10px 0;
+}
+
+.labellegend h1 {
+    color: white;
+        font-size: 1.8em;
+}
+.labelclick {
+    position: relative;
+    width: 100%;
+}
+
+.labelhover {
+    position: relative;
+    width: 100%;
+;
+}
+
+.chartlegendclick {
+    padding-left: 5px;
+    padding-bottom: 1px;
+}
+
+.chartlegendhover {
+    padding-left: 5px;
+    padding-bottom: 1px;
+}
 
 .chartlegend {
     margin: 10 10 10 10;
     position: absolute;
     height: 100px;
-    width:100%;
+    width: 100%;
     color: black;
     /* background-color: #000; */
     border: solid thin black;

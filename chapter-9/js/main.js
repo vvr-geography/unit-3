@@ -53,7 +53,7 @@
                 countiesData = data[1];
 
             // //place graticule on map
-            // setGraticule(map, path);
+            setGraticule(map, path);
 
             //translate usCounties TopoJSON
             var usCounties = topojson.feature(countiesData, countiesData.objects.us_counties).features;
@@ -76,26 +76,26 @@
         }
     }; //end setMap()
 
-    // function setGraticule(map, path) {
-    //     //create graticule generator
-    //     var graticule = d3.geoGraticule()
-    //         .step([5, 5]); //place graticule lines every 5 degrees of longitude and latitude
+    function setGraticule(map, path) {
+        //create graticule generator
+        var graticule = d3.geoGraticule()
+            .step([5, 5]); //place graticule lines every 5 degrees of longitude and latitude
 
-    //     //create graticule background
-    //     var gratBackground = map.append("path")
-    //         .datum(graticule.outline()) //bind graticule background
-    //         .attr("class", "gratBackground") //assign class for styling
-    //         .attr("d", path) //project graticule
+        //create graticule background
+        var gratBackground = map.append("path")
+            .datum(graticule.outline()) //bind graticule background
+            .attr("class", "gratBackground") //assign class for styling
+            .attr("d", path) //project graticule
 
-    //     //create graticule lines
-    //     var gratLines = map.selectAll(".gratLines") //select graticule elements that will be created
-    //         .data(graticule.lines()) //bind graticule lines to each element to be created
-    //         .enter() //create an element for each datum
-    //         .append("path") //append each element to the svg as a path element
-    //         .attr("class", "gratLines") //assign class for styling
-    //         .attr("d", path); //project graticule lines
+        // //create graticule lines
+        // var gratLines = map.selectAll(".gratLines") //select graticule elements that will be created
+        //     .data(graticule.lines()) //bind graticule lines to each element to be created
+        //     .enter() //create an element for each datum
+        //     .append("path") //append each element to the svg as a path element
+        //     .attr("class", "gratLines") //assign class for styling
+        //     .attr("d", path); //project graticule lines
 
-    // };
+    };
 
     function joinData(usCounties, csvData) {
         //loop through csv to assign each set of csv attribute values to geojson region
@@ -229,7 +229,7 @@
     function setChart(csvData, colorScale, props) {
         //chart frame dimensions
         var chartWidth = window.innerWidth * 0.75,
-            chartHeight = window.innerHeight * 0.2;
+            chartHeight = window.innerHeight * 0.22;
 
         //create a second svg element to hold the bar chart
         var chart = d3.select(".maphtml")
@@ -242,21 +242,15 @@
             .append("svg")
             .attr("height", 200)
             .attr("width", 500)
-            .attr("transform", "translate(70, 130)")
-            .attr("class", "linePlot1")
-            .on("mouseover", function (event, d) {
-                setChartLabel(props)
-            });
+            .attr("transform", "translate(70, 140)")
+            .attr("class", "linePlot1");
 
         var linePlot2 = d3.select(".chart")
             .append("svg")
             .attr("height", 200)
             .attr("width", 500)
-            .attr("transform", "translate(590, 130)")
-            .attr("class", "linePlot2")
-            .on("mouseover", function (event, d) {
-                setChartLabel(props)
-            });;
+            .attr("transform", "translate(590, 140)")
+            .attr("class", "linePlot2");
 
         //create axis
 
@@ -265,19 +259,21 @@
         //create axis g element and add axis
         var axis1 = linePlot1.append("g")
             .attr("class", "axis1")
-            .attr("transform", "translate(75, 125)")
+            .attr("transform", "translate(75, 135)")
+            .style("color","white")
             .call(xAxis)
 
         var axis2 = linePlot2.append("g")
             .attr("class", "axis2")
-            .attr("transform", "translate(595, 125)")
+            .attr("transform", "translate(595, 135)")
+            .style("color","white")
             .call(xAxis);
 
         var chartTitle = chart.append("text")
-            .attr("x", 180)
+            .attr("x", 200)
             .attr("y", 20)
             .attr("class", "chartTitle")
-            .text("Potential Heat Risk of Days Over " + selectedYear + " Degrees " + "for Incarcerated Communities")
+            .text("Potential Heat Risk of Days Over " + selectedYear + " Degrees " + " for Incarcerated People")
 
         drawCircle();
 
@@ -298,7 +294,7 @@
                 return 70;
             })
             .attr("cy", function (d) {
-                return 100;
+                return 110;
             });
 
         var circle = d3.select(".chart")
@@ -315,7 +311,7 @@
                 return 570;
             })
             .attr("cy", function (d) {
-                return 100;
+                return 110;
             });
     }
 
@@ -348,13 +344,14 @@
                 }
             })
             .attr("y", function (d) {
-                return 40;
+                return 50;
             })
             .transition()
-            .duration(300)
+            .duration(100)
             .text(function (d) {
                 return d["NAMELSAD"];
-            });
+            })
+            .style("fill", "white");
 
         d3.select(".chart").selectAll(".numbers" + type).remove();
         var numbers = d3.select(".chart").append("text")
@@ -372,13 +369,14 @@
                 }
             })
             .attr("y", function (d) {
-                return 40;
+                return 50;
             })
             .transition()
-            .duration(300)
+            .duration(100)
             .text(function (d) {
                 return "Incarcerated Population: " + d["incarcerated_20"];
-            });
+            })
+            .style("fill", "white");
 
 
     }
@@ -440,9 +438,9 @@
         var chartTitle = d3.select(".chartTitle")
             .text(function () {
                 if (selectedYear == 127) {
-                    return "Potential Off the Charts Heat Risk for Incarcerated Communities"
+                    return "Potential Off the Charts Heat Risk for Incarcerated People"
                 } else
-                    return "Potential Heat Risk of Days Over " + selectedYear + " Degrees" + "for Incarcerated Communities"
+                    return "Potential Heat Risk of Days Over " + selectedYear + " Degrees" + " for Incarcerated People"
             });
     }
 
@@ -463,7 +461,7 @@
                 return scaleY(data[d]);
             })
             .attr("cy", function (d) {
-                return 100;
+                return 110;
             })
             .attr("transform", "translate(" + transform + ")")
             .style("fill", function (d) {
@@ -489,7 +487,7 @@
                 return scaleY(data[d]);
             })
             .attr("y", function (d) {
-                return 85;
+                return 95;
             })
             .attr("text-anchor", "middle")
             .attr("transform", "translate(" + transform + ")")
@@ -576,8 +574,8 @@
                 } else {
                     return "#ccc";
                 }
-            });
-
+            })
+            
         var heatrisk = infolabel.append("div")
             .attr("class", "labelheatrisk")
             .html(function (d) {
@@ -608,7 +606,8 @@
                 } else {
                     return "#ccc";
                 }
-            });
+            })
+            ;            
 
         var heatrisk = infolabel.append("div")
             .attr("class", "labelheatrisk")
