@@ -557,7 +557,7 @@
 
     function createLabelLegend(props, colorScale){
         //label content
-        var labelAttribute = "<h2>" + props.NAMELSAD +
+        var labelAttribute = "<h2>" + props.NAMELSAD + " days above " + selectedYear + " degrees" +
         "</h2><b>Incarcerated Population: </b>" + props["incarcerated_20"];
 
         //create info label div
@@ -589,7 +589,7 @@
 
     function createLabelLegendClick(props, colorScale, label) {
         //label content
-        var labelAttribute = "<h2>" + props.NAMELSAD +
+        var labelAttribute = "<h2>" + props.NAMELSAD + " days above " + selectedYear + " degrees" +
             "</h2><b>Incarcerated Population: </b>" + props["incarcerated_20"];
 
         //create info label div

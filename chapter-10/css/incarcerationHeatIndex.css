@@ -180,6 +180,11 @@ option {
     color: white;
         font-size: 1.8em;
 }
+
+.labellegend h2 {
+        font-size: 1.3em;
+}
+
 .labelclick {
     position: relative;
     width: 100%;
